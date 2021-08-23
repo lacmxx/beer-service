@@ -27,6 +27,7 @@ public class Beer {
     @Version
     private Long version;
 
+    @Column
     private String name;
 
     private String style;
@@ -45,6 +46,7 @@ public class Beer {
     private Timestamp createdDate;
 
     @UpdateTimestamp
+    @Column(updatable = false)
     private Timestamp lastModifiedDate;
 
 }
