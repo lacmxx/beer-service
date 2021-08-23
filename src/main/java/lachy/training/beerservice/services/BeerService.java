@@ -1,11 +1,16 @@
 package lachy.training.beerservice.services;
 
 import lachy.training.beerservice.web.models.BeerDto;
+import lachy.training.beerservice.web.models.BeerPagedList;
+import lachy.training.beerservice.web.models.BeerStyleEnum;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface BeerService {
+
+    BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest of, Boolean showInventoryOnHand);
 
     List<BeerDto> listAll();
 
@@ -16,6 +21,5 @@ public interface BeerService {
     BeerDto updateBeer(UUID id, BeerDto beerDto);
 
     void deleteBeerById(UUID beerId);
-
 
 }

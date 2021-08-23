@@ -5,9 +5,14 @@ import lachy.training.beerservice.repositories.BeerRepository;
 import lachy.training.beerservice.web.controllers.NotFoundException;
 import lachy.training.beerservice.web.mappers.BeerMapper;
 import lachy.training.beerservice.web.models.BeerDto;
+import lachy.training.beerservice.web.models.BeerPagedList;
+import lachy.training.beerservice.web.models.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +25,50 @@ public class BeerServiceImpl implements BeerService {
 
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
+
+    @Override
+    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand) {
+
+        BeerPagedList beerPagedList;
+        Page<Beer> beerPage;
+
+        if (StringUtils.hasLength(beerName) && !StringUtils.isEmpty(beerStyle)) {
+            //search both
+            beerPage = beerRepository.findAllByNameAndStyle(beerName, beerStyle, pageRequest);
+        } else if (StringUtils.hasLength(beerName) && StringUtils.isEmpty(beerStyle)) {
+            //search beer_service name
+            beerPage = beerRepository.findAllByName(beerName, pageRequest);
+        } else if (!StringUtils.hasLength(beerName) && !StringUtils.isEmpty(beerStyle)) {
+            //search beer_service style
+            beerPage = beerRepository.findAllByStyle(beerStyle, pageRequest);
+        } else {
+            beerPage = beerRepository.findAll(pageRequest);
+        }
+
+        if (showInventoryOnHand){
+            beerPagedList = new BeerPagedList(beerPage
+                    .getContent()
+                    .stream()
+                    .map(beerMapper::toDtoWithInventory)
+                    .collect(Collectors.toList()),
+                    PageRequest
+                            .of(beerPage.getPageable().getPageNumber(),
+                                    beerPage.getPageable().getPageSize()),
+                    beerPage.getTotalElements());
+        } else {
+            beerPagedList = new BeerPagedList(beerPage
+                    .getContent()
+                    .stream()
+                    .map(beerMapper::toDto)
+                    .collect(Collectors.toList()),
+                    PageRequest
+                            .of(beerPage.getPageable().getPageNumber(),
+                                    beerPage.getPageable().getPageSize()),
+                    beerPage.getTotalElements());
+        }
+
+        return beerPagedList;
+    }
 
     @Override
     public List<BeerDto> listAll() {
