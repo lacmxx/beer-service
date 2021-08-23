@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +39,7 @@ class BeerControllerTest {
     @Test
     void getTest() throws Exception {
 
-        given(beerService.getBeerById(any())).willReturn(getValidBeerDto());
+        given(beerService.getBeerById(any(), anyBoolean())).willReturn(getValidBeerDto());
 
         ResultActions resultActions = mockMvc.perform(
                 get(String.format("%s%s", endPoint, UUID.randomUUID()))
