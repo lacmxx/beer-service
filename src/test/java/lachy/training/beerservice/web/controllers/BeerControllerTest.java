@@ -34,7 +34,7 @@ class BeerControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private static final String endPoint = "/api/v1/beer/";
+    private static final String endPoint = "/api/v1/beer";
 
     @Test
     void getTest() throws Exception {
@@ -42,10 +42,22 @@ class BeerControllerTest {
         given(beerService.getBeerById(any(), anyBoolean())).willReturn(getValidBeerDto());
 
         ResultActions resultActions = mockMvc.perform(
-                get(String.format("%s%s", endPoint, UUID.randomUUID()))
+                get(String.format("%s/%s", endPoint, UUID.randomUUID()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void getByUpcTest() throws Exception {
+
+        given(beerService.getBeerByUpc(any(), anyBoolean())).willReturn(getValidBeerDto());
+
+        ResultActions resultActions = mockMvc.perform(
+                        get(String.format("%sUpc/%s", endPoint, UUID.randomUUID()))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
 
     @Test
     void saveTest() throws Exception {
@@ -67,7 +79,7 @@ class BeerControllerTest {
         BeerDto beerDto = getValidBeerDto();
         String beerToJson = objectMapper.writeValueAsString(beerDto);
 
-        mockMvc.perform( put(String.format("%s%s", endPoint, UUID.randomUUID()))
+        mockMvc.perform( put(String.format("%s/%s", endPoint, UUID.randomUUID()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerToJson)
         ).andExpect(status().isNoContent());

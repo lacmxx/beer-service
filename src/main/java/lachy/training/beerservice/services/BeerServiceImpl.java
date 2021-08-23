@@ -99,6 +99,24 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
+    @Cacheable(cacheNames = "beerUpcCache", key = "#upc", condition = "#showInventoryOnHand == false")
+    public BeerDto getBeerByUpc(String upc, boolean showInventoryOnHand) {
+
+        if ( showInventoryOnHand ){
+            log.debug("Find beer with inventory by UPC: " + upc);
+            return beerRepository.findByUpc(upc)
+                    .map(beerMapper::toDtoWithInventory)
+                    .orElseThrow(NotFoundException::new);
+
+        } else {
+            log.debug("Find beer by UPC: " + upc);
+            return beerRepository.findByUpc(upc)
+                    .map(beerMapper::toDto)
+                    .orElseThrow(NotFoundException::new);
+        }
+    }
+
+    @Override
     public BeerDto saveNewBeer(BeerDto beerDto) {
         Beer beer = beerMapper.toDomain(beerDto);
         return beerMapper.toDto(
