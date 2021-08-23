@@ -31,8 +31,6 @@ public class BeerServiceImpl implements BeerService {
     @Cacheable(cacheNames = "beerListCache", condition = "#showInventoryOnHand == false")
     public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand) {
 
-        System.out.println("I was called");
-
         BeerPagedList beerPagedList;
         Page<Beer> beerPage;
 
@@ -85,7 +83,6 @@ public class BeerServiceImpl implements BeerService {
     @Override
     @Cacheable(cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false")
     public BeerDto getBeerById(UUID beerId, boolean showInventoryOnHand) {
-        System.out.println("I was called");
 
         if ( showInventoryOnHand ){
             log.debug("Find beer with inventory by Id: " + beerId);
