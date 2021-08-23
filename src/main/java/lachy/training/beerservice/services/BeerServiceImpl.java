@@ -9,6 +9,7 @@ import lachy.training.beerservice.web.models.BeerPagedList;
 import lachy.training.beerservice.web.models.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,10 @@ public class BeerServiceImpl implements BeerService {
     private final BeerMapper beerMapper;
 
     @Override
+    @Cacheable(cacheNames = "beerListCache", condition = "#showInventoryOnHand == false")
     public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand) {
+
+        System.out.println("I was called");
 
         BeerPagedList beerPagedList;
         Page<Beer> beerPage;
@@ -79,7 +83,10 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
+    @Cacheable(cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false")
     public BeerDto getBeerById(UUID beerId, boolean showInventoryOnHand) {
+        System.out.println("I was called");
+
         if ( showInventoryOnHand ){
             log.debug("Find beer with inventory by Id: " + beerId);
             return beerRepository.findById(beerId)
