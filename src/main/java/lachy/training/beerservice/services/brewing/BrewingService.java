@@ -1,4 +1,4 @@
-package lachy.training.beerservice.services;
+package lachy.training.beerservice.services.brewing;
 
 import lachy.training.beerservice.config.JmsConfig;
 import lachy.training.beerservice.domains.Beer;
